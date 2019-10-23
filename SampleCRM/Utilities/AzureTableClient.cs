@@ -11,10 +11,11 @@ namespace SampleCRM.Utilities
     {
         private string partitionKey { get; }
         private CloudTable cloudTable { get; }
-        private readonly ILogger logger { get; }
+        private ILogger logger { get; }
 
-        public AzureTableClient()
+        public AzureTableClient(ILogger<AzureTableClient> logger)
         {
+            this.logger = logger;
             var settings = AppSettings.LoadAppSettings();
             this.partitionKey = settings.PartitionKey;
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(settings.StorageConnectionString);
@@ -42,6 +43,7 @@ namespace SampleCRM.Utilities
             }
             catch (StorageException e)
             {
+                logger.LogError(e.ToString());
                 throw;
             }
         }
@@ -56,6 +58,7 @@ namespace SampleCRM.Utilities
             }
             catch (StorageException e)
             {
+                logger.LogError(e.ToString());
                 throw;
             }
         }
@@ -87,6 +90,7 @@ namespace SampleCRM.Utilities
             }
             catch (StorageException e)
             {
+                logger.LogError(e.ToString());
                 throw;
             }
         }
@@ -106,6 +110,7 @@ namespace SampleCRM.Utilities
             }
             catch (StorageException e)
             {
+                logger.LogError(e.ToString());
                 throw;
             }
         }

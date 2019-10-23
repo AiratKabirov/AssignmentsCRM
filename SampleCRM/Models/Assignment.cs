@@ -1,6 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
-using Newtonsoft.Json;
-using System;
 
 namespace SampleCRM.Models
 {

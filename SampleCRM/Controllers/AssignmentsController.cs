@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using SampleCRM.Models;
 using SampleCRM.Services;
 
@@ -15,12 +13,9 @@ namespace SampleCRM.Controllers
     {
         private IAssignmentsService dataProvider { get; }
 
-        private readonly ILogger logger;
-
-        public AssignmentsController(IAssignmentsService dataProvider, ILogger<AssignmentsController> logger)
+        public AssignmentsController(IAssignmentsService dataProvider)
         {
             this.dataProvider = dataProvider;
-            this.logger = logger;
         }
 
         /// <summary>
@@ -69,13 +64,14 @@ namespace SampleCRM.Controllers
         [Authorize]
         public async Task<ActionResult> Put(string id, [FromBody] Assignment assignment)
         {
-            if (id != assignment.RowKey)
+            if (!string.IsNullOrWhiteSpace(assignment.RowKey) && id != assignment.RowKey)
             {
-                return BadRequest("Invalid");
+                throw new BadRequestException("Cannot update the id field");
             }
 
+            assignment.RowKey = id;
             var result = await dataProvider.CreateOrUpdateAssignment(assignment);
-            return Ok();
+            return Ok(result);
 
         }
 

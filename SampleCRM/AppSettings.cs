@@ -12,6 +12,8 @@
 
         public string SigningSecurityKey { get; set; }
 
+        public string AdminPassword { get; set; }
+
         public static AppSettings LoadAppSettings()
         {
             IConfigurationRoot configRoot = new ConfigurationBuilder()

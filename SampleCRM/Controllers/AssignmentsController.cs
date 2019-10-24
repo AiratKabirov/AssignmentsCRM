@@ -50,7 +50,7 @@ namespace SampleCRM.Controllers
         [Authorize]
         public async Task<ActionResult<Assignment>> Post([FromBody] Assignment assignment)
         {
-            var result = await dataProvider.CreateOrUpdateAssignment(assignment);
+            var result = await dataProvider.CreateAssignment(assignment);
             return Created(this.Request.Path + $"/{result.RowKey}", result);
         }
 
@@ -69,8 +69,7 @@ namespace SampleCRM.Controllers
                 throw new BadRequestException("Cannot update the id field");
             }
 
-            assignment.RowKey = id;
-            var result = await dataProvider.CreateOrUpdateAssignment(assignment);
+            var result = await dataProvider.UpdateAssignment(id, assignment);
             return Ok(result);
 
         }

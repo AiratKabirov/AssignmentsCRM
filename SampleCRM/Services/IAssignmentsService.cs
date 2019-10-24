@@ -11,7 +11,9 @@ namespace SampleCRM.Services
 
         Task<Assignment> GetAssignment(string id);
 
-        Task<Assignment> CreateOrUpdateAssignment(Assignment assignment);
+        Task<Assignment> CreateAssignment(Assignment assignment);
+
+        Task<Assignment> UpdateAssignment(string id, Assignment assignment);
 
         Task DeleteAssignment(string id);
     }

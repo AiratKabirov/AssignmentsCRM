@@ -24,7 +24,7 @@ namespace SampleCRM.Utilities
             this.cloudTable = table;
         }
 
-        public async Task<IReadOnlyList<Assignment>> ListAllEntities()
+        public async Task<IEnumerable<Assignment>> ListAllEntities()
         {
             try
             {
@@ -102,7 +102,7 @@ namespace SampleCRM.Utilities
                 var deleteEntity = await this.GetEntityById(id);
                 if (deleteEntity == null)
                 {
-                    throw new ArgumentNullException(nameof(deleteEntity));
+                    throw new NotFoundException("Entity with such id was not found");
                 }
 
                 TableOperation deleteOperation = TableOperation.Delete(deleteEntity);

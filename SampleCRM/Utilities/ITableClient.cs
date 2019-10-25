@@ -6,7 +6,7 @@ namespace SampleCRM.Utilities
 {
     public interface ITableClient
     {
-        Task<IReadOnlyList<Assignment>> ListAllEntities();
+        Task<IEnumerable<Assignment>> ListAllEntities();
 
         Task<Assignment> GetEntityById(string id);
 

@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SampleCRM.Models;
+using SampleCRM.ViewModels;
 
 namespace SampleCRM.Services
 {
     public interface IAssignmentsService
     {
-        Task<IReadOnlyList<Assignment>> ListAssignments();
+        Task<IEnumerable<AssignmentViewModel>> ListAssignments();
 
-        Task<Assignment> GetAssignment(string id);
+        Task<AssignmentViewModel> GetAssignment(string id);
 
-        Task<Assignment> CreateAssignment(Assignment assignment);
+        Task<AssignmentViewModel> CreateAssignment(AssignmentViewModel assignment);
 
-        Task<Assignment> UpdateAssignment(string id, Assignment assignment);
+        Task<AssignmentViewModel> UpdateAssignment(string id, AssignmentViewModel assignment);
 
         Task DeleteAssignment(string id);
     }

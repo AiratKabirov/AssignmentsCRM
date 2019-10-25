@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using SampleCRM.Models;
+using System.Linq;
 using SampleCRM.Utilities;
+using SampleCRM.ViewModels;
+using SampleCRM.Models;
 
 namespace SampleCRM.Services
 {
@@ -15,28 +16,50 @@ namespace SampleCRM.Services
             this.tableClient = tableClient;
         }
 
-        public async Task<IReadOnlyList<Assignment>> ListAssignments()
+        public async Task<IEnumerable<AssignmentViewModel>> ListAssignments()
         {
-            return await tableClient.ListAllEntities();
+            var assignments = await tableClient.ListAllEntities();
+            return assignments.Select(assignment => assignment.GetAssignmentViewModel());
         }
 
-        public async Task<Assignment> GetAssignment(string id)
+        public async Task<AssignmentViewModel> GetAssignment(string id)
         {
-            return await this.tableClient.GetEntityById(id);
+            var assignment = await this.tableClient.GetEntityById(id);
+
+            if (assignment == null)
+            {
+                throw new NotFoundException("Entity with such id was not found");
+            }
+
+            return assignment.GetAssignmentViewModel();
         }
 
-        public async Task<Assignment> CreateAssignment(Assignment assignment)
+        public async Task<AssignmentViewModel> CreateAssignment(AssignmentViewModel assignmentViewModel)
         {
-            // ids for new assignments should be created and managed by our system, even if client sends particular id, override it here
-            assignment.RowKey = Guid.NewGuid().ToString();
-            return await this.tableClient.InsertOrMergeEntityAsync(assignment);
+            var existingAssignment = string.IsNullOrWhiteSpace(assignmentViewModel.Id) 
+                ? null 
+                : await this.tableClient.GetEntityById(assignmentViewModel.Id);
+
+            if (existingAssignment != null)
+            {
+                throw new BadRequestException("Assignment this such id already exists");
+            }
+
+            var assignment = await this.tableClient.InsertOrMergeEntityAsync(assignmentViewModel.GetAssignment());
+            return assignment.GetAssignmentViewModel();
         }
 
-        public async Task<Assignment> UpdateAssignment(string id, Assignment assignment)
+        public async Task<AssignmentViewModel> UpdateAssignment(string id, AssignmentViewModel assignmentViewModel)
         {
             // id in URI and assignment's row key should be the same
-            assignment.RowKey = id;
-            return await this.tableClient.InsertOrMergeEntityAsync(assignment);
+            if (!string.IsNullOrWhiteSpace(assignmentViewModel.Id) && id != assignmentViewModel.Id)
+            {
+                throw new BadRequestException("Cannot update the id field");
+            }
+
+            assignmentViewModel.Id = id;
+            var assignment = await this.tableClient.InsertOrMergeEntityAsync(assignmentViewModel.GetAssignment());
+            return assignment.GetAssignmentViewModel();
         }
 
         public async Task DeleteAssignment(string id)

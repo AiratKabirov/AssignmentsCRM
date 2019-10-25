@@ -30,6 +30,10 @@ namespace SampleCRM.Utilities
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         }
+                        else if (contextFeature.Error is NotFoundException)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                        }
                         else
                         {
                             logger.LogError($"Something went wrong: {contextFeature.Error.Message}");

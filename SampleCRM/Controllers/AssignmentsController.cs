@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SampleCRM.Models;
 using SampleCRM.Services;
+using SampleCRM.ViewModels;
 
 namespace SampleCRM.Controllers
 {
@@ -11,11 +12,11 @@ namespace SampleCRM.Controllers
     [ApiController]
     public class AssignmentsController : ControllerBase
     {
-        private IAssignmentsService dataProvider { get; }
+        private IAssignmentsService dataService { get; }
 
-        public AssignmentsController(IAssignmentsService dataProvider)
+        public AssignmentsController(IAssignmentsService dataService)
         {
-            this.dataProvider = dataProvider;
+            this.dataService = dataService;
         }
 
         /// <summary>
@@ -24,9 +25,9 @@ namespace SampleCRM.Controllers
         /// <returns>List of assignments</returns>
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IReadOnlyList<Assignment>>> Get()
+        public async Task<ActionResult<IReadOnlyList<AssignmentViewModel>>> Get()
         {
-            return Ok(await dataProvider.ListAssignments());
+            return Ok(await dataService.ListAssignments());
         }
 
         /// <summary>
@@ -36,9 +37,10 @@ namespace SampleCRM.Controllers
         /// <returns>Assignment</returns>
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<Assignment>> Get(string id)
+        public async Task<ActionResult<AssignmentViewModel>> Get(string id)
         {
-            return Ok(await dataProvider.GetAssignment(id));
+            var assignment = await dataService.GetAssignment(id);
+            return Ok(assignment);
         }
 
         /// <summary>
@@ -48,10 +50,10 @@ namespace SampleCRM.Controllers
         /// <returns>Assignment</returns>
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Assignment>> Post([FromBody] Assignment assignment)
+        public async Task<ActionResult<AssignmentViewModel>> Post([FromBody] AssignmentViewModel assignment)
         {
-            var result = await dataProvider.CreateAssignment(assignment);
-            return Created(this.Request.Path + $"/{result.RowKey}", result);
+            var result = await dataService.CreateAssignment(assignment);
+            return Created(this.Request.Path + $"/{result.Id}", result);
         }
 
         /// <summary>
@@ -62,14 +64,9 @@ namespace SampleCRM.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult> Put(string id, [FromBody] Assignment assignment)
+        public async Task<ActionResult> Put(string id, [FromBody] AssignmentViewModel assignment)
         {
-            if (!string.IsNullOrWhiteSpace(assignment.RowKey) && id != assignment.RowKey)
-            {
-                throw new BadRequestException("Cannot update the id field");
-            }
-
-            var result = await dataProvider.UpdateAssignment(id, assignment);
+            var result = await dataService.UpdateAssignment(id, assignment);
             return Ok(result);
 
         }
@@ -83,7 +80,7 @@ namespace SampleCRM.Controllers
         [Authorize]
         public async Task<ActionResult> Delete(string id)
         {
-            await dataProvider.DeleteAssignment(id);
+            await dataService.DeleteAssignment(id);
 
             return NoContent();
         }

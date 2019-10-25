@@ -100,17 +100,22 @@ namespace SampleCRM.Utilities
             try
             {
                 var deleteEntity = await this.GetEntityById(id);
-                if (deleteEntity == null)
+                TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
+                TableResult result = await this.cloudTable.ExecuteAsync(deleteOperation);
+            }
+            catch (ArgumentNullException ex)
+            {
+                logger.LogError(ex.ToString());
+                throw new NotFoundException("Entity with such id was not found");
+            }
+            catch (StorageException ex)
+            {
+                logger.LogError(ex.ToString());
+                if (ex?.Message?.Contains("does not exist") ?? false)
                 {
                     throw new NotFoundException("Entity with such id was not found");
                 }
 
-                TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
-                TableResult result = await this.cloudTable.ExecuteAsync(deleteOperation);
-            }
-            catch (StorageException e)
-            {
-                logger.LogError(e.ToString());
                 throw;
             }
         }

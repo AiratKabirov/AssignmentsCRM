@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SampleCRM.Models;
 using SampleCRM.Services;
 using SampleCRM.ViewModels;
 

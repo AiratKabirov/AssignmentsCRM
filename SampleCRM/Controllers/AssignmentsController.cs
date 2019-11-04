@@ -52,7 +52,7 @@ namespace SampleCRM.Controllers
         public async Task<ActionResult<AssignmentViewModel>> Post([FromBody] AssignmentViewModel assignment)
         {
             var result = await dataService.CreateAssignment(assignment);
-            return Created(this.Request.Path + $"/{result.Id}", result);
+            return Created((this.Request?.Path ?? string.Empty) + $"/{result.Id}", result);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SampleCRM.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult> Put(string id, [FromBody] AssignmentViewModel assignment)
+        public async Task<ActionResult<AssignmentViewModel>> Put(string id, [FromBody] AssignmentViewModel assignment)
         {
             var result = await dataService.UpdateAssignment(id, assignment);
             return Ok(result);
@@ -80,7 +80,6 @@ namespace SampleCRM.Controllers
         public async Task<ActionResult> Delete(string id)
         {
             await dataService.DeleteAssignment(id);
-
             return NoContent();
         }
     }

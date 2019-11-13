@@ -1,0 +1,7 @@
+{
+  "PartitionKey": "string",
+  "RowKey": "string",
+  "Timestamp": "datetime",
+  "Name": "string",
+  "Description": "string"
+}

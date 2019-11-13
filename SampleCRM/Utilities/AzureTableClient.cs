@@ -9,31 +9,24 @@ namespace SampleCRM.Utilities
 {
     public class AzureTableClient : ITableClient
     {
-        private string partitionKey { get; }
-        private CloudTable cloudTable { get; }
         private ILogger logger { get; }
 
         public AzureTableClient(ILogger<AzureTableClient> logger)
         {
             this.logger = logger;
-            var settings = AppSettings.LoadAppSettings();
-            this.partitionKey = settings.PartitionKey;
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(settings.StorageConnectionString);
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
-            CloudTable table = tableClient.GetTableReference(settings.TableName);
-            this.cloudTable = table;
         }
 
-        public async Task<IEnumerable<Assignment>> ListAllEntities()
+        public async Task<IEnumerable<T>> ListAllEntities<T>(string tableName) where T : ITableEntity, new()
         {
             try
             {
                 TableContinuationToken token = null;
-                var entities = new List<Assignment>();
+                var entities = new List<T>();
 
                 do
                 {
-                    var queryResult = await this.cloudTable.ExecuteQuerySegmentedAsync(new TableQuery<Assignment>(), token);
+                    var table = GetTable(tableName);
+                    var queryResult = await table.ExecuteQuerySegmentedAsync(new TableQuery<T>(), token);
                     entities.AddRange(queryResult.Results);
                     token = queryResult.ContinuationToken;
                 }
@@ -48,13 +41,14 @@ namespace SampleCRM.Utilities
             }
         }
 
-        public async Task<Assignment> GetEntityById(string id)
+        public async Task<T> GetEntityById<T>(string tableName, string outerId, string innerId) where T : ITableEntity
         {
             try
             {
-                TableOperation retrieveOperation = TableOperation.Retrieve<Assignment>(this.partitionKey, id.ToString());
-                TableResult result = await this.cloudTable.ExecuteAsync(retrieveOperation);
-                return result.Result as Assignment;
+                var table = GetTable(tableName);
+                TableOperation retrieveOperation = TableOperation.Retrieve<T>(outerId, innerId);
+                TableResult result = await table.ExecuteAsync(retrieveOperation);
+                return (T)result.Result;
             }
             catch (StorageException e)
             {
@@ -63,7 +57,7 @@ namespace SampleCRM.Utilities
             }
         }
 
-        public async Task<Assignment> InsertOrMergeEntityAsync(Assignment entity)
+        public async Task<T> InsertOrMergeEntityAsync<T>(string tableName, T entity) where T : ITableEntity
         {
             if (entity == null)
             {
@@ -74,7 +68,7 @@ namespace SampleCRM.Utilities
             {
                 if (string.IsNullOrWhiteSpace(entity.PartitionKey))
                 {
-                    entity.PartitionKey = this.partitionKey;
+                    entity.PartitionKey = "f564303b-49f7-4bcd-9f3b-e5199fc9d354";
                 }
 
                 if (string.IsNullOrWhiteSpace(entity.RowKey))
@@ -82,11 +76,11 @@ namespace SampleCRM.Utilities
                     entity.RowKey = Guid.NewGuid().ToString();
                 }
 
+                var table = GetTable(tableName);
                 TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
-                TableResult result = await this.cloudTable.ExecuteAsync(insertOrMergeOperation);
-                Assignment insertedCustomer = result.Result as Assignment;
+                TableResult result = await table.ExecuteAsync(insertOrMergeOperation);
 
-                return insertedCustomer;
+                return (T)result.Result;
             }
             catch (StorageException e)
             {
@@ -95,13 +89,14 @@ namespace SampleCRM.Utilities
             }
         }
 
-        public async Task DeleteEntityAsync(string id)
+        public async Task DeleteEntityAsync<T>(string tableName, string outerId, string innerId) where T : ITableEntity
         {
             try
             {
-                var deleteEntity = await this.GetEntityById(id);
+                var table = GetTable(tableName);
+                var deleteEntity = await this.GetEntityById<T>(tableName, outerId, innerId);
                 TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
-                TableResult result = await this.cloudTable.ExecuteAsync(deleteOperation);
+                TableResult result = await table.ExecuteAsync(deleteOperation);
             }
             catch (ArgumentNullException ex)
             {
@@ -118,6 +113,15 @@ namespace SampleCRM.Utilities
 
                 throw;
             }
+        }
+
+        private CloudTable GetTable(string tableName)
+        {
+            var settings = AppSettings.LoadAppSettings();
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(settings.StorageConnectionString);
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient(new TableClientConfiguration());
+            CloudTable table = tableClient.GetTableReference(tableName);
+            return table;
         }
     }
 }

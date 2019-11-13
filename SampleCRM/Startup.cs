@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using SampleCRM.Services;
 using SampleCRM.Utilities;
+using SampleCRM.ViewModels;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -34,7 +35,9 @@ namespace SampleCRM
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddScoped<IAssignmentsService, AssignmentsService>();
+            services.AddScoped<IDataService<AssignmentViewModel>, AssignmentsService>();
+
+            services.AddScoped<IDataService<ProjectViewModel>, ProjectsService>();
 
             services.AddScoped<ITableClient, AzureTableClient>();
 

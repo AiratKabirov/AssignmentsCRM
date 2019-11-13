@@ -45,7 +45,7 @@ namespace SampleCRM.Tests
 
         public AssignmentsControllerTests()
         {
-            var mockedAssignmentsService = new Mock<IAssignmentsService>();
+            var mockedAssignmentsService = new Mock<IDataService>();
             mockedAssignmentsService.Setup(aS => aS.ListAssignments()).Returns(Task.FromResult(testAssignments.AsEnumerable()));
             mockedAssignmentsService.Setup(aS => aS.GetAssignment(It.IsAny<string>())).Returns(Task.FromResult(testAssignments.First()));
             mockedAssignmentsService.Setup(aS => aS.CreateAssignment(It.IsAny<AssignmentViewModel>())).Returns(Task.FromResult(newTestAssignment));

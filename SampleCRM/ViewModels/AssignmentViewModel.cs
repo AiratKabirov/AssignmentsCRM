@@ -3,6 +3,11 @@
     public class AssignmentViewModel
     {
         /// <summary>
+        /// Id of the project assignment belongs to
+        /// </summary>
+        public string ProjectId { get; set; }
+
+        /// <summary>
         /// Assignment id
         /// </summary>
         public string Id { get; set; }

@@ -9,11 +9,12 @@ namespace SampleCRM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AssignmentsController : ControllerBase
     {
-        private IAssignmentsService dataService { get; }
+        private IDataService<AssignmentViewModel> dataService { get; }
 
-        public AssignmentsController(IAssignmentsService dataService)
+        public AssignmentsController(IDataService<AssignmentViewModel> dataService)
         {
             this.dataService = dataService;
         }
@@ -23,22 +24,21 @@ namespace SampleCRM.Controllers
         /// </summary>
         /// <returns>List of assignments</returns>
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<IReadOnlyList<AssignmentViewModel>>> Get()
         {
-            return Ok(await dataService.ListAssignments());
+            return Ok(await dataService.ListEntities());
         }
 
         /// <summary>
         /// Gets an assignment with id specified
         /// </summary>
-        /// <param name="id">Id of the assignemnt to modify</param>
+        /// <param name="projectId">Id of the project assignment belongs to</param>
+        /// <param name="assignmentId">Id of the assignment</param>
         /// <returns>Assignment</returns>
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<AssignmentViewModel>> Get(string id)
+        [HttpGet("{projectId}/{assignmentId}")]
+        public async Task<ActionResult<AssignmentViewModel>> Get(string projectId, string assignmentId)
         {
-            var assignment = await dataService.GetAssignment(id);
+            var assignment = await dataService.GetEntity(projectId, assignmentId);
             return Ok(assignment);
         }
 
@@ -48,24 +48,23 @@ namespace SampleCRM.Controllers
         /// <param name="assignment">Assignment to create</param>
         /// <returns>Assignment</returns>
         [HttpPost]
-        [Authorize]
         public async Task<ActionResult<AssignmentViewModel>> Post([FromBody] AssignmentViewModel assignment)
         {
-            var result = await dataService.CreateAssignment(assignment);
+            var result = await dataService.CreateEntity(assignment);
             return Created((this.Request?.Path ?? string.Empty) + $"/{result.Id}", result);
         }
 
         /// <summary>
         /// Modifies assignment with specified id
         /// </summary>
-        /// <param name="id">Id of the assignemnt to modify</param>
+        /// <param name="projectId">Id of the project assignment belongs to</param>
+        /// <param name="assignmentId">Id of the assignment</param>
         /// <param name="assignment">Assignment with modified properties</param>
         /// <returns></returns>
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<AssignmentViewModel>> Put(string id, [FromBody] AssignmentViewModel assignment)
+        [HttpPut("{projectId}/{assignmentId}")]
+        public async Task<ActionResult<AssignmentViewModel>> Put(string projectId, string assignmentId, [FromBody] AssignmentViewModel assignment)
         {
-            var result = await dataService.UpdateAssignment(id, assignment);
+            var result = await dataService.UpdateEntity(projectId, assignmentId, assignment);
             return Ok(result);
 
         }
@@ -73,13 +72,13 @@ namespace SampleCRM.Controllers
         /// <summary>
         /// Deletes assignment with specified id
         /// </summary>
-        /// <param name="id">Id of the assignment to delete</param>
+        /// <param name="projectId">Id of the project assignment belongs to</param>
+        /// <param name="assignmentId">Id of the assignment</param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<ActionResult> Delete(string id)
+        [HttpDelete("{projectId}/{assignmentId}")]
+        public async Task<ActionResult> Delete(string projectId, string assignmentId)
         {
-            await dataService.DeleteAssignment(id);
+            await dataService.DeleteEntity(projectId, assignmentId);
             return NoContent();
         }
     }

@@ -45,12 +45,12 @@ namespace SampleCRM.Tests
 
         public AssignmentsControllerTests()
         {
-            var mockedAssignmentsService = new Mock<IDataService>();
-            mockedAssignmentsService.Setup(aS => aS.ListAssignments()).Returns(Task.FromResult(testAssignments.AsEnumerable()));
-            mockedAssignmentsService.Setup(aS => aS.GetAssignment(It.IsAny<string>())).Returns(Task.FromResult(testAssignments.First()));
-            mockedAssignmentsService.Setup(aS => aS.CreateAssignment(It.IsAny<AssignmentViewModel>())).Returns(Task.FromResult(newTestAssignment));
-            mockedAssignmentsService.Setup(aS => aS.UpdateAssignment(It.IsAny<string>(), It.IsAny<AssignmentViewModel>())).Returns(Task.FromResult(newTestAssignment));
-            mockedAssignmentsService.Setup(aS => aS.DeleteAssignment(It.IsAny<string>()));
+            var mockedAssignmentsService = new Mock<IDataService<AssignmentViewModel>>();
+            mockedAssignmentsService.Setup(aS => aS.ListEntities()).Returns(Task.FromResult(testAssignments.AsEnumerable()));
+            mockedAssignmentsService.Setup(aS => aS.GetEntity(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(testAssignments.First()));
+            mockedAssignmentsService.Setup(aS => aS.CreateEntity(It.IsAny<AssignmentViewModel>())).Returns(Task.FromResult(newTestAssignment));
+            mockedAssignmentsService.Setup(aS => aS.UpdateEntity(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AssignmentViewModel>())).Returns(Task.FromResult(newTestAssignment));
+            mockedAssignmentsService.Setup(aS => aS.DeleteEntity(It.IsAny<string>(), It.IsAny<string>()));
 
             this.assignmentsController = new AssignmentsController(mockedAssignmentsService.Object);
         }
@@ -66,7 +66,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void GetAssignment()
         {
-            var result = await assignmentsController.Get("1");
+            var result = await assignmentsController.Get("1", "1");
 
             Assert.True(result.Result is OkObjectResult);
         }
@@ -82,7 +82,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void UpdateAssignment()
         {
-            var result = await assignmentsController.Put("1", newTestAssignment);
+            var result = await assignmentsController.Put("1", "1", newTestAssignment);
 
             Assert.True(result.Result is OkObjectResult);
         }
@@ -90,7 +90,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void DeleteAssignment()
         {
-            var result = await assignmentsController.Delete("1");
+            var result = await assignmentsController.Delete("1", "1");
 
             Assert.True(result is NoContentResult);
         }

@@ -66,16 +66,6 @@ namespace SampleCRM.Utilities
 
             try
             {
-                if (string.IsNullOrWhiteSpace(entity.PartitionKey))
-                {
-                    entity.PartitionKey = "f564303b-49f7-4bcd-9f3b-e5199fc9d354";
-                }
-
-                if (string.IsNullOrWhiteSpace(entity.RowKey))
-                {
-                    entity.RowKey = Guid.NewGuid().ToString();
-                }
-
                 var table = GetTable(tableName);
                 TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
                 TableResult result = await table.ExecuteAsync(insertOrMergeOperation);

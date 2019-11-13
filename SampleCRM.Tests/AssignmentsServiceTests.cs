@@ -54,6 +54,7 @@ namespace SampleCRM.Tests
             var mockedTableClient = new Mock<ITableClient>();
             mockedTableClient.Setup(tC => tC.ListAllEntities<Assignment>(It.IsAny<string>())).Returns(Task.FromResult<IEnumerable<Assignment>>(testAssignments));
             mockedTableClient.Setup(tC => tC.GetEntityById<Assignment>(It.IsAny<string>(), It.IsAny<string>(), "1")).Returns(Task.FromResult(testAssignments.First()));
+            mockedTableClient.Setup(tC => tC.GetEntityById<Project>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new Project()));
             mockedTableClient.Setup(tC => tC.GetEntityById<Assignment>(It.IsAny<string>(), It.IsAny<string>(), "10")).Returns(Task.FromResult<Assignment>(null));
             mockedTableClient.Setup(tC => tC.InsertOrMergeEntityAsync<Assignment>(It.IsAny<string>(), It.IsAny<Assignment>())).Returns(Task.FromResult(newTestAssignment.GetAssignment()));
             mockedTableClient.Setup(tC => tC.DeleteEntityAsync<Assignment>(It.IsAny<string>(), It.IsAny<string>(), "1"));
@@ -80,7 +81,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void GetNonExistingAssignment_ShouldThrow()
         {
-            await Assert.ThrowsAsync<NotFoundException>(() => this.assignmentsService.GetEntity("1", "10"));
+            await Assert.ThrowsAsync<CommonWebException>(() => this.assignmentsService.GetEntity("1", "10"));
         }
 
         [Fact]
@@ -94,13 +95,13 @@ namespace SampleCRM.Tests
         [Fact]
         public async void CreateAlreadyExistingAssignment_ShouldThrow()
         {
-            await Assert.ThrowsAsync<BadRequestException>(() => this.assignmentsService.CreateEntity(testAssignments.First().GetAssignmentViewModel()));
+            await Assert.ThrowsAsync<CommonWebException>(() => this.assignmentsService.CreateEntity(testAssignments.First().GetAssignmentViewModel()));
         }
 
         [Fact]
         public async void UpdateAssignment()
         {
-            var updatedAssignment = await this.assignmentsService.UpdateEntity("1", "1", updatedTestAssignment);
+            var updatedAssignment = await this.assignmentsService.UpdateEntity("1_1", "1", updatedTestAssignment);
 
             Assert.NotNull(updatedAssignment);
         }
@@ -113,7 +114,7 @@ namespace SampleCRM.Tests
                 Id = "100"
             };
 
-            await Assert.ThrowsAsync<BadRequestException>(() => this.assignmentsService.UpdateEntity("1", "1", assignment));
+            await Assert.ThrowsAsync<CommonWebException>(() => this.assignmentsService.UpdateEntity("1", "1", assignment));
         }
 
         [Fact]

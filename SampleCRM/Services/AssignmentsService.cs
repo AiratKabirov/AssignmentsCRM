@@ -5,6 +5,7 @@ using SampleCRM.Utilities;
 using SampleCRM.ViewModels;
 using SampleCRM.Models;
 using System;
+using System.Net;
 
 namespace SampleCRM.Services
 {
@@ -32,7 +33,7 @@ namespace SampleCRM.Services
 
             if (assignment == null)
             {
-                throw new NotFoundException("Entity with such id was not found");
+                throw new CommonWebException("Entity with such id was not found", HttpStatusCode.NotFound);
             }
 
             return assignment.GetAssignmentViewModel();
@@ -55,7 +56,7 @@ namespace SampleCRM.Services
 
             if (existingAssignment != null)
             {
-                throw new BadRequestException("Assignment this such id already exists");
+                throw new CommonWebException("Assignment this such id already exists", HttpStatusCode.BadRequest);
             }
 
             if (string.IsNullOrWhiteSpace(assignmentViewModel.Id))
@@ -72,13 +73,13 @@ namespace SampleCRM.Services
             // project id in URI and assignment's project id should be the same
             if (!string.IsNullOrWhiteSpace(assignmentViewModel.ProjectId) && outerId != assignmentViewModel.ProjectId)
             {
-                throw new BadRequestException("Cannot update the project id field");
+                throw new CommonWebException("Cannot update the project id field", HttpStatusCode.BadRequest);
             }
 
             // id in URI and assignment's row key should be the same
             if (!string.IsNullOrWhiteSpace(assignmentViewModel.Id) && innerId != assignmentViewModel.Id)
             {
-                throw new BadRequestException("Cannot update the id field");
+                throw new CommonWebException("Cannot update the id field", HttpStatusCode.BadRequest);
             }
 
             assignmentViewModel.ProjectId = outerId;
@@ -102,7 +103,7 @@ namespace SampleCRM.Services
             
             if (project == null)
             {
-                throw new NotFoundException("Project does not exist");
+                throw new CommonWebException("Project does not exist", HttpStatusCode.NotFound);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
@@ -91,14 +92,14 @@ namespace SampleCRM.Utilities
             catch (ArgumentNullException ex)
             {
                 logger.LogError(ex.ToString());
-                throw new NotFoundException("Entity with such id was not found");
+                throw new CommonWebException("Entity with such id was not found", HttpStatusCode.NotFound);
             }
             catch (StorageException ex)
             {
                 logger.LogError(ex.ToString());
                 if (ex?.Message?.Contains("does not exist") ?? false)
                 {
-                    throw new NotFoundException("Entity with such id was not found");
+                    throw new CommonWebException("Entity with such id was not found", HttpStatusCode.NotFound);
                 }
 
                 throw;

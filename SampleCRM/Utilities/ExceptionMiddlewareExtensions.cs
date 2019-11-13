@@ -26,13 +26,9 @@ namespace SampleCRM.Utilities
                         {
                             context.Response.StatusCode = (int)HttpStatusCode.BadGateway;
                         }
-                        else if (contextFeature.Error is BadRequestException)
+                        else if (contextFeature.Error is CommonWebException)
                         {
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        }
-                        else if (contextFeature.Error is NotFoundException)
-                        {
-                            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                            context.Response.StatusCode = (int)(contextFeature.Error as CommonWebException).StatusCode;
                         }
                         else
                         {

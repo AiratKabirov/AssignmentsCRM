@@ -13,6 +13,12 @@ namespace SampleCRM.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        /// <summary>
+        /// Please use whatever name you want for auth request and 'admin' as password. After receiving bearer token, push 'Authorize' button on top of the page and insert it in the appeared field with the preceding 'bearer ' word.
+        /// </summary>
+        /// <param name="authRequest"></param>
+        /// <param name="signingEncodingKey"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         public ActionResult<string> Post(AuthenticationRequest authRequest, [FromServices] IJwtSigningEncodingKey signingEncodingKey)

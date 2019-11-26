@@ -53,7 +53,7 @@ namespace SampleCRM.Tests
         {
             var mockedTableClient = new Mock<ITableClient>();
             mockedTableClient.Setup(tC => tC.ListAllEntities<Assignment>(It.IsAny<string>())).Returns(Task.FromResult<IEnumerable<Assignment>>(testAssignments));
-            mockedTableClient.Setup(tC => tC.GetEntityById<Assignment>(It.IsAny<string>(), It.IsAny<string>(), "1")).Returns(Task.FromResult(testAssignments.First()));
+            mockedTableClient.Setup(tC => tC.GetEntityById<Assignment>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(testAssignments.First()));
             mockedTableClient.Setup(tC => tC.GetEntityById<Project>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(new Project()));
             mockedTableClient.Setup(tC => tC.GetEntityById<Assignment>(It.IsAny<string>(), It.IsAny<string>(), "10")).Returns(Task.FromResult<Assignment>(null));
             mockedTableClient.Setup(tC => tC.InsertOrMergeEntityAsync<Assignment>(It.IsAny<string>(), It.IsAny<Assignment>())).Returns(Task.FromResult(newTestAssignment.GetAssignment()));

@@ -88,7 +88,7 @@ namespace SampleCRM.Services
 
             assignmentViewModel.Id = innerId;
             var assignment = await this.tableClient.InsertOrMergeEntityAsync(assignmentsTableName, assignmentViewModel.GetAssignment());
-            return assignment.GetAssignmentViewModel();
+            return await GetEntity(assignment.PartitionKey, assignment.RowKey);
         }
 
         public async Task DeleteEntity(string outerId, string innerId)

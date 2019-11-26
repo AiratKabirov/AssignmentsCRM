@@ -61,8 +61,8 @@ namespace SampleCRM.Controllers
         /// <param name="assignmentId">Id of the assignment</param>
         /// <param name="assignment">Assignment with modified properties</param>
         /// <returns></returns>
-        [HttpPut("{projectId}/{assignmentId}")]
-        public async Task<ActionResult<AssignmentViewModel>> Put(string projectId, string assignmentId, [FromBody] AssignmentViewModel assignment)
+        [HttpPatch("{projectId}/{assignmentId}")]
+        public async Task<ActionResult<AssignmentViewModel>> Patch(string projectId, string assignmentId, [FromBody] AssignmentViewModel assignment)
         {
             var result = await dataService.UpdateEntity(projectId, assignmentId, assignment);
             return Ok(result);

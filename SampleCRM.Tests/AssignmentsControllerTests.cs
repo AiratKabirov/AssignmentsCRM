@@ -82,7 +82,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void UpdateAssignment()
         {
-            var result = await assignmentsController.Put("1", "1", newTestAssignment);
+            var result = await assignmentsController.Patch("1", "1", newTestAssignment);
 
             Assert.True(result.Result is OkObjectResult);
         }

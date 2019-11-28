@@ -47,7 +47,7 @@ namespace SampleCRM.Services
             }
             else
             {
-                await CheckIfSuchProjectExists(assignmentViewModel.ProjectId);
+                await ThrowIfSuchProjectDoesNotExistsAsync(assignmentViewModel.ProjectId);
             }
 
             var existingAssignment = string.IsNullOrWhiteSpace(assignmentViewModel.Id) 
@@ -59,10 +59,7 @@ namespace SampleCRM.Services
                 throw new CommonWebException("Assignment this such id already exists", HttpStatusCode.BadRequest);
             }
 
-            if (string.IsNullOrWhiteSpace(assignmentViewModel.Id))
-            {
-                assignmentViewModel.Id = Guid.NewGuid().ToString();
-            }
+            assignmentViewModel.Id = Guid.NewGuid().ToString();
 
             var assignment = await this.tableClient.InsertOrMergeEntityAsync(assignmentsTableName, assignmentViewModel.GetAssignment());
             return assignment.GetAssignmentViewModel();
@@ -84,7 +81,7 @@ namespace SampleCRM.Services
 
             assignmentViewModel.ProjectId = outerId;
 
-            await CheckIfSuchProjectExists(assignmentViewModel.ProjectId);
+            await ThrowIfSuchProjectDoesNotExistsAsync(assignmentViewModel.ProjectId);
 
             assignmentViewModel.Id = innerId;
             var assignment = await this.tableClient.InsertOrMergeEntityAsync(assignmentsTableName, assignmentViewModel.GetAssignment());
@@ -96,7 +93,7 @@ namespace SampleCRM.Services
             await this.tableClient.DeleteEntityAsync<Assignment>(assignmentsTableName, outerId, innerId);
         }
 
-        private async Task CheckIfSuchProjectExists(string projectId)
+        private async Task ThrowIfSuchProjectDoesNotExistsAsync(string projectId)
         {
             var projectPartitionKey = string.Concat(projectId.TakeWhile(c => c != '_'));
             var project = await this.tableClient.GetEntityById<Project>(projectsTableName, projectPartitionKey, projectId);

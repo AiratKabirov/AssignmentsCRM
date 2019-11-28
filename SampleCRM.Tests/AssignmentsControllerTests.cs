@@ -21,6 +21,12 @@ namespace SampleCRM.Tests
             Description = "TestDescription"
         };
 
+        private AssignmentForUpsertViewModel upsertAssignment = new AssignmentForUpsertViewModel
+        {
+            Name = "Test",
+            Description = "TestDescription"
+        };
+
         private List<AssignmentViewModel> testAssignments = new List<AssignmentViewModel>
         {
             new AssignmentViewModel
@@ -82,7 +88,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void UpdateAssignment()
         {
-            var result = await assignmentsController.Patch("1", "1", newTestAssignment);
+            var result = await assignmentsController.Patch("1", "1", upsertAssignment);
 
             Assert.True(result.Result is OkObjectResult);
         }

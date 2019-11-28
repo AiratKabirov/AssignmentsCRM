@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SampleCRM.Services;
+using SampleCRM.Utilities;
 using SampleCRM.ViewModels;
 
 namespace SampleCRM.Controllers
@@ -62,9 +63,12 @@ namespace SampleCRM.Controllers
         /// <param name="assignment">Assignment with modified properties</param>
         /// <returns></returns>
         [HttpPatch("{projectId}/{assignmentId}")]
-        public async Task<ActionResult<AssignmentViewModel>> Patch(string projectId, string assignmentId, [FromBody] AssignmentViewModel assignment)
+        public async Task<ActionResult<AssignmentViewModel>> Patch(string projectId, string assignmentId, [FromBody] AssignmentForUpsertViewModel assignment)
         {
-            var result = await dataService.UpdateEntity(projectId, assignmentId, assignment);
+            var assignmentToUpdate = assignment.GetAssignmentViewModel();
+            assignmentToUpdate.ProjectId = projectId;
+            assignmentToUpdate.Id = assignmentId;
+            var result = await dataService.UpdateEntity(projectId, assignmentId, assignmentToUpdate);
             return Ok(result);
 
         }

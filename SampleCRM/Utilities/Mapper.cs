@@ -27,6 +27,15 @@ namespace SampleCRM.Utilities
             };
         }
 
+        public static AssignmentViewModel GetAssignmentViewModel(this AssignmentForUpsertViewModel assignment)
+        {
+            return new AssignmentViewModel
+            {
+                Name = assignment?.Name,
+                Description = assignment?.Description
+            };
+        }
+
         public static ProjectViewModel GetProjectViewModel(this Project project)
         {
             return new ProjectViewModel

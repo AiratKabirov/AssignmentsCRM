@@ -80,7 +80,7 @@ namespace SampleCRM.Tests
         [Fact]
         public async void CreateAssignment()
         {
-            var result = await assignmentsController.Post(newTestAssignment);
+            var result = await assignmentsController.Post("1", upsertAssignment);
 
             Assert.True(result.Result is CreatedResult);
         }

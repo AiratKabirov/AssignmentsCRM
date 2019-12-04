@@ -47,11 +47,14 @@ namespace SampleCRM.Controllers
         /// Creates assignment
         /// </summary>
         /// <param name="assignment">Assignment to create</param>
+        /// <param name="projectId">Id of the project assignment belongs to</param>
         /// <returns>Assignment</returns>
-        [HttpPost]
-        public async Task<ActionResult<AssignmentViewModel>> Post([FromBody] AssignmentViewModel assignment)
+        [HttpPost("{projectId}")]
+        public async Task<ActionResult<AssignmentViewModel>> Post(string projectId, [FromBody] AssignmentForUpsertViewModel assignment)
         {
-            var result = await dataService.CreateEntity(assignment);
+            var assignmentToCreate = assignment.GetAssignmentViewModel();
+            assignmentToCreate.ProjectId = projectId;
+            var result = await dataService.CreateEntity(assignmentToCreate);
             return Created((this.Request?.Path ?? string.Empty) + $"/{result.Id}", result);
         }
 
